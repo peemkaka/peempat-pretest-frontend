@@ -4,7 +4,6 @@ export interface Quote {
     author: string;
     createdAt: Date;
     votes: number;
-    // สำหรับระบบ like/dislike
     upvotes: number;
     downvotes: number;
   }

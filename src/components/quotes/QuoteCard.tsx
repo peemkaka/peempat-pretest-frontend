@@ -1,12 +1,13 @@
 import { Quote } from '@/types/quote';
-import { BiDownvote, BiUpvote } from 'react-icons/bi';
+import { BiDownvote, BiSolidDownvote, BiSolidUpvote, BiUpvote } from 'react-icons/bi';
 
 interface QuoteCardProps {
   quote: Quote;
   onVote: (type: 'up' | 'down') => void;
+  userVoteType: 'up' | 'down' | null;
 }
 
-const QuoteCard = ({ quote, onVote }: QuoteCardProps) => {
+const QuoteCard = ({ quote, onVote, userVoteType }: QuoteCardProps) => {
   return (
     <div className="border rounded-lg p-4 mb-4 shadow-sm hover:shadow-md transition-shadow">
       <p className="text-lg italic">"{quote.text}"</p>
@@ -15,17 +16,17 @@ const QuoteCard = ({ quote, onVote }: QuoteCardProps) => {
       <div className="flex items-center mt-4">
         <button 
           onClick={() => onVote('up')}
-          className="flex items-center text-green-500 mr-4"
+          className={`flex items-center ${userVoteType === 'up' ? 'text-green-600 font-bold' : 'text-green-500'} mr-4 transition-colors`}
         >
-          <BiUpvote className="w-5 h-5 mr-1" />
+         {userVoteType === 'up'? <BiSolidUpvote/> : <BiUpvote/>}
           {quote.upvotes}
         </button>
         
         <button 
           onClick={() => onVote('down')}
-          className="flex items-center text-red-500"
+          className={`flex items-center ${userVoteType === 'down' ? 'text-red-600 font-bold' : 'text-red-500'} transition-colors`}
         >
-          <BiDownvote className="w-5 h-5 mr-1" />
+          {userVoteType === 'down'? <BiSolidDownvote /> : <BiDownvote/>}
           {quote.downvotes}
         </button>
         

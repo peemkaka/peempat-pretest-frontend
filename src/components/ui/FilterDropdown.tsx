@@ -1,12 +1,18 @@
-import { useState } from 'react';
-import { IoFunnelOutline } from 'react-icons/io5';
+import { useState } from "react";
+import { IoFunnelOutline } from "react-icons/io5";
+const FILTER_STORAGE_KEY = "quotes_filter_setting";
 
 interface FilterDropdownProps {
   onFilter: (filter: string) => void;
 }
 
 const FilterDropdown = ({ onFilter }: FilterDropdownProps) => {
-  const [selectedFilter, setSelectedFilter] = useState('newest');
+  const [selectedFilter, setSelectedFilter] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(FILTER_STORAGE_KEY) || "newest";
+    }
+    return "newest";
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
@@ -27,7 +33,6 @@ const FilterDropdown = ({ onFilter }: FilterDropdownProps) => {
         <option value="newest">Newest First</option>
         <option value="oldest">Oldest First</option>
         <option value="top">Top Voted</option>
-        <option value="controversial">Most Controversial</option>
       </select>
       <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
         <svg

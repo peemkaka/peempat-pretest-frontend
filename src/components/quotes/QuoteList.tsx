@@ -4,42 +4,45 @@ import { Quote } from '@/types/quote';
 
 interface QuoteListProps {
   quotes: Quote[];
+  userVoteType: {
+    [quoteId: string]: "up" | "down" | null;
+  };
   onVote: (id: string, type: "up" | "down") => void;
 }
 
-const QuoteList = ({ quotes, onVote }: QuoteListProps) => {
+const QuoteList = ({ quotes, onVote, userVoteType }: QuoteListProps) => {
   const [visibleQuotes, setVisibleQuotes] = useState<Quote[]>([]);
   const [page, setPage] = useState(1);
   const itemsPerPage = 4;
+  const QUOTE_LIST_LOADED_KEY = "quote_list_fully_loaded";
 
-  // Reset เมื่อ quotes เปลี่ยน
   useEffect(() => {
-    setPage(1);
-    setVisibleQuotes(quotes.slice(0, itemsPerPage));
+    const isFullyLoaded = localStorage.getItem(QUOTE_LIST_LOADED_KEY) === "true";
+    if (isFullyLoaded) {
+      setVisibleQuotes(quotes);
+      setPage(Math.ceil(quotes.length / itemsPerPage));
+    } else {
+      setPage(1);
+      setVisibleQuotes(quotes.slice(0, itemsPerPage));
+    }
   }, [quotes]);
 
-  // อัพเดต visible quotes เมื่อ page เปลี่ยน
   useEffect(() => {
-    setVisibleQuotes(quotes.slice(0, page * itemsPerPage));
+    const newVisible = quotes.slice(0, page * itemsPerPage);
+    setVisibleQuotes(newVisible);
+
+    if (newVisible.length >= quotes.length) {
+      localStorage.setItem(QUOTE_LIST_LOADED_KEY, "true");
+    }
   }, [page, quotes]);
 
-  // ตรวจสอบว่ายังมีข้อมูลให้โหลดเพิ่มหรือไม่
   const hasMoreQuotes = visibleQuotes.length < quotes.length;
 
-  // ฟังก์ชันโหลดข้อมูลเพิ่ม
   const loadMore = () => {
     if (hasMoreQuotes) {
       setPage(prev => prev + 1);
     }
   };
-
-  // สำหรับ debug
-  useEffect(() => {
-    console.log('Current page:', page);
-    console.log('Visible items:', visibleQuotes.length);
-    console.log('Total items:', quotes.length);
-    console.log('Has more quotes:', hasMoreQuotes);
-  }, [page, visibleQuotes, quotes, hasMoreQuotes]);
 
   return (
     <div className="space-y-4">
@@ -47,7 +50,8 @@ const QuoteList = ({ quotes, onVote }: QuoteListProps) => {
         <QuoteCard 
           key={quote.id} 
           quote={quote} 
-          onVote={(type) => onVote(quote.id, type)} 
+          onVote={(type) => onVote(quote.id, type)}
+          userVoteType={userVoteType[quote.id]}
         />
       ))}
       
