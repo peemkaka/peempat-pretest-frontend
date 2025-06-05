@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import QuoteCard from './QuoteCard';
 import { Quote } from '@/types/quote';
 
@@ -8,53 +8,51 @@ interface QuoteListProps {
     [quoteId: string]: "up" | "down" | null;
   };
   onVote: (id: string, type: "up" | "down") => void;
+  onAddEdit: (quote: Quote) => void; // เพิ่ม prop นี้
+  onDelete: (quote: Quote) => void;
+  isLoggedIn: boolean; // เพิ่ม prop นี้
 }
 
-const QuoteList = ({ quotes, onVote, userVoteType }: QuoteListProps) => {
-  const [visibleQuotes, setVisibleQuotes] = useState<Quote[]>([]);
+const QuoteList = ({ quotes, onVote, userVoteType, onAddEdit, onDelete, isLoggedIn }: QuoteListProps) => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 4;
   const QUOTE_LIST_LOADED_KEY = "quote_list_fully_loaded";
 
+  // Reset localStorage key เมื่อจำนวน quotes เปลี่ยน
   useEffect(() => {
-    const isFullyLoaded = localStorage.getItem(QUOTE_LIST_LOADED_KEY) === "true";
-    if (isFullyLoaded) {
-      setVisibleQuotes(quotes);
-      setPage(Math.ceil(quotes.length / itemsPerPage));
-    } else {
-      setPage(1);
-      setVisibleQuotes(quotes.slice(0, itemsPerPage));
-    }
-  }, [quotes]);
+    localStorage.removeItem(QUOTE_LIST_LOADED_KEY);
+    setPage(1);
+  }, [quotes.length]);
 
-  useEffect(() => {
-    const newVisible = quotes.slice(0, page * itemsPerPage);
-    setVisibleQuotes(newVisible);
-
-    if (newVisible.length >= quotes.length) {
-      localStorage.setItem(QUOTE_LIST_LOADED_KEY, "true");
-    }
-  }, [page, quotes]);
+  const isFullyLoaded = typeof window !== 'undefined' && localStorage.getItem(QUOTE_LIST_LOADED_KEY) === "true";
+  const visibleQuotes = isFullyLoaded
+    ? quotes
+    : quotes.slice(0, page * itemsPerPage);
 
   const hasMoreQuotes = visibleQuotes.length < quotes.length;
 
   const loadMore = () => {
-    if (hasMoreQuotes) {
-      setPage(prev => prev + 1);
+    const nextPage = page + 1;
+    setPage(nextPage);
+    if (nextPage * itemsPerPage >= quotes.length) {
+      localStorage.setItem(QUOTE_LIST_LOADED_KEY, "true");
     }
   };
 
   return (
     <div className="space-y-4">
-      {visibleQuotes.map(quote => (
-        <QuoteCard 
-          key={quote.id} 
-          quote={quote} 
+      {visibleQuotes.map((quote) => (
+        <QuoteCard
+          key={quote.id}
+          quote={quote}
           onVote={(type) => onVote(quote.id, type)}
           userVoteType={userVoteType[quote.id]}
+          onAddEdit={() => onAddEdit(quote)} 
+          onDelete={() => onDelete(quote)}
+          isLoggedIn={isLoggedIn} 
         />
       ))}
-      
+
       {visibleQuotes.length === 0 && (
         <div className="text-center py-8 text-gray-500">
           No quotes to display

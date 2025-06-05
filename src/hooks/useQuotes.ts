@@ -34,8 +34,8 @@ const useQuotes = () => {
           const mockQuotes: Quote[] = [
             {
               id: "1",
-              text: "The only way to do great work is to love what you do.",
-              author: "Steve Jobs",
+              text: "เป็นคนไม่ถือตัว ส่วนใหญ่ถือแต่แก้ว",
+              author: "นักกวีท่านนึง",
               createdAt: new Date("2023-01-15"),
               votes: 42,
               upvotes: 50,
@@ -43,8 +43,8 @@ const useQuotes = () => {
             },
             {
               id: "2",
-              text: "Life is what happens when you're busy making other plans.",
-              author: "John Lennon",
+              text: "เมื่อไรเงินในกระเป๋า จะเยอะเท่าความสวยที่เรามี",
+              author: "นักกวีท่านนึง",
               createdAt: new Date("2023-02-20"),
               votes: 35,
               upvotes: 40,
@@ -52,8 +52,8 @@ const useQuotes = () => {
             },
             {
               id: "3",
-              text: "In the middle of difficulty lies opportunity.",
-              author: "Albert Einstein",
+              text: "อยู่ด้วยกันจนถึงสิ้นปีเลยได้ไหม",
+              author: "นักกวีท่านนึง",
               createdAt: new Date("2023-03-10"),
               votes: 28,
               upvotes: 30,
@@ -62,7 +62,7 @@ const useQuotes = () => {
             {
               id: "4",
               text: "อร่อยให้ 6 สกปรกให้ 10",
-              author: "Messi",
+              author: "นักกวีท่านนึง",
               createdAt: new Date("2025-04-6"),
               votes: 12,
               upvotes: 30,
@@ -70,8 +70,8 @@ const useQuotes = () => {
             },
             {
               id: "5",
-              text: "อร่อยให้ 7 สกปรกให้ 11",
-              author: "Messi",
+              text: "เรียนมา 10 ปี รู้แล้วถนัดอะไร ถนัดขวา",
+              author: "นักกวีท่านนึง",
               createdAt: new Date("2025-04-5"),
               votes: 14,
               upvotes: 30,
@@ -79,8 +79,8 @@ const useQuotes = () => {
             },
             {
               id: "6",
-              text: "อร่อยให้ 7 สกปรกให้ 11",
-              author: "Messi",
+              text: "ไอที่ดี คือไอจีเรานะค",
+              author: "นักกวีท่านนึง",
               createdAt: new Date("2025-04-5"),
               votes: 14,
               upvotes: 30,
@@ -104,32 +104,40 @@ const useQuotes = () => {
     fetchQuotes();
   }, []);
 
-  const addQuote = (newQuote: Omit<Quote, "id" | "createdAt" | "votes" | "upvotes" | "downvotes">) => {
+  const addQuote = (newQuote: { text: string; author: string }) => {
     const quote: Quote = {
       ...newQuote,
       id: Math.random().toString(36).substring(2, 9),
-      createdAt: new Date(), 
+      createdAt: new Date(),
       votes: 0,
       upvotes: 0,
       downvotes: 0,
     };
-    const updatedQuotes = [quote, ...quotes];
-    setQuotes(updatedQuotes);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedQuotes));
+    setQuotes(prev => {
+      const updated = [quote, ...prev];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
+    localStorage.removeItem("quote_list_fully_loaded");
   };
 
   const deleteQuote = (id: string) => {
     const updatedQuotes = quotes.filter((quote) => quote.id !== id);
-    setQuotes(updatedQuotes);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedQuotes));
+    setQuotes(prev => {
+      const updated = updatedQuotes;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
   };
 
-  const updateQuote = (id: string, updatedText: string) => {
-    const updatedQuotes = quotes.map((quote) =>
-      quote.id === id ? { ...quote, text: updatedText } : quote
-    );
-    setQuotes(updatedQuotes);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedQuotes));
+  const updateQuote = (id: string, text: string, author: string) => {
+    setQuotes(prev => {
+      const updated = prev.map(q =>
+        q.id === id ? { ...q, text, author } : q
+      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const voteQuote = (id: string, type: "up" | "down") => {
@@ -140,17 +148,17 @@ const useQuotes = () => {
       if (q.id === id) {
         let newQuote = { ...q };
 
-        // ถ้าเคย vote ไว้แล้ว ให้ลบ vote เดิมออกก่อน
-        if (previousVote) {
-          newQuote.votes = previousVote === "up" ? q.votes - 1 : q.votes + 1;
-          newQuote[`${previousVote}votes`] = q[`${previousVote}votes`] - 1;
-        }
+        // // ถ้าเคย vote ไว้แล้ว ให้ลบ vote เดิมออกก่อน
+        // if (previousVote) {
+        //   newQuote.votes = previousVote === "up" ? q.votes - 1 : q.votes + 1;
+        //   newQuote[`${previousVote}votes`] = q[`${previousVote}votes`] - 1;
+        // }
 
-        // ถ้า vote ใหม่เป็นประเภทเดียวกับที่เคย vote ไว้ ให้ยกเลิก vote
-        if (previousVote === type) {
-          updatedUserVotes[id] = null;
-          return newQuote;
-        }
+        // // ถ้า vote ใหม่เป็นประเภทเดียวกับที่เคย vote ไว้ ให้ยกเลิก vote
+        // if (previousVote === type) {
+        //   updatedUserVotes[id] = null;
+        //   return newQuote;
+        // }
 
         // เพิ่ม vote ใหม่
         newQuote.votes = type === "up" ? newQuote.votes + 1 : newQuote.votes - 1;
