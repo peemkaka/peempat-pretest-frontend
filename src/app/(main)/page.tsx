@@ -10,9 +10,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 const FILTER_STORAGE_KEY = "quotes_filter_setting";
-const QUOTES_SHOWN_KEY = "quotes_lazy_loaded_count";
-const INITIAL_COUNT = 10;
-const LOAD_MORE_STEP = 10;
+
 
 export default function QuotesPage() {
   const router = useRouter();

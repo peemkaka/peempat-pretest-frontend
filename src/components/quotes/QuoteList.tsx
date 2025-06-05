@@ -8,9 +8,9 @@ interface QuoteListProps {
     [quoteId: string]: "up" | "down" | null;
   };
   onVote: (id: string, type: "up" | "down") => void;
-  onAddEdit: (quote: Quote) => void; // เพิ่ม prop นี้
+  onAddEdit: (quote: Quote) => void; 
   onDelete: (quote: Quote) => void;
-  isLoggedIn: boolean; // เพิ่ม prop นี้
+  isLoggedIn: boolean; 
 }
 
 const QuoteList = ({ quotes, onVote, userVoteType, onAddEdit, onDelete, isLoggedIn }: QuoteListProps) => {
@@ -18,7 +18,6 @@ const QuoteList = ({ quotes, onVote, userVoteType, onAddEdit, onDelete, isLogged
   const itemsPerPage = 4;
   const QUOTE_LIST_LOADED_KEY = "quote_list_fully_loaded";
 
-  // Reset localStorage key เมื่อจำนวน quotes เปลี่ยน
   useEffect(() => {
     localStorage.removeItem(QUOTE_LIST_LOADED_KEY);
     setPage(1);
