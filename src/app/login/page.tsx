@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Button from '@/components/ui/button';
 
 export default function Login() {
   const router = useRouter();
@@ -84,9 +83,9 @@ export default function Login() {
           </div>
 
           <div>
-            <Button onClick={() => {}} type="submit">
+            <button onClick={() => {}} type="submit">
               Login
-            </Button>
+            </button>
           </div>
         </form>
       </div>
