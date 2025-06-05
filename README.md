@@ -1,3 +1,69 @@
+# Quotes Pretest Project
+
+ระบบ Quotes (คำคม) สำหรับทดสอบ Front-end (Next.js + React + TypeScript)
+
+---
+## Demo
+- https://peempat-qoutes.netlify.app/
+- https://github.com/peemkaka/peempat-pretest-frontend
+---
+
+---
+
+## Features
+
+- ระบบ Login (username/password)
+- เพิ่ม, แก้ไข, ลบ คำคม (เฉพาะ admin)
+- Vote (upvote/downvote) ได้ (เฉพาะ admin)
+- ค้นหา/กรอง/เรียงลำดับคำคม
+- Lazy loading (infinite scroll)
+- แสดงผล vote result ใต้แต่ละคำคม
+
+---
+
+## วิธีใช้งาน
+
+1. **เข้าสู่ระบบ**
+
+    **เข้าสู่ระบบ**
+    - Username: **admin**
+    - Password: **1234**
+
+2. **Clone repo และติดตั้ง dependencies**
+
+    ```bash
+    npm run dev
+    ```
+    เปิด [http://localhost:3000](http://localhost:3000) ใน browser
+
+3. **เริ่มต้นระบบ**
+    - Username: **admin**
+    - Password: **1234**
+
+---
+
+## Notes
+
+- ผู้ใช้ทั่วไป (ไม่ login) สามารถดูคำคมและผลโหวตได้
+- เฉพาะ admin เท่านั้นที่สามารถเพิ่ม/แก้ไข/ลบ/โหวตคำคมได้
+
+---
+
+## Tech Stack
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+
+---
+
+## License
+
+For test and educational purposes only.
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

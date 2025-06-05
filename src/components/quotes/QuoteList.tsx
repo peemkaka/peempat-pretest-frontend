@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import QuoteCard from './QuoteCard';
 import { Quote } from '@/types/quote';
 
@@ -16,27 +16,30 @@ interface QuoteListProps {
 const QuoteList = ({ quotes, onVote, userVoteType, onAddEdit, onDelete, isLoggedIn }: QuoteListProps) => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 4;
-  const QUOTE_LIST_LOADED_KEY = "quote_list_fully_loaded";
+  const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    localStorage.removeItem(QUOTE_LIST_LOADED_KEY);
-    setPage(1);
-  }, [quotes.length]);
-
-  const isFullyLoaded = typeof window !== 'undefined' && localStorage.getItem(QUOTE_LIST_LOADED_KEY) === "true";
-  const visibleQuotes = isFullyLoaded
-    ? quotes
-    : quotes.slice(0, page * itemsPerPage);
-
+  const visibleQuotes = quotes.slice(0, page * itemsPerPage);
   const hasMoreQuotes = visibleQuotes.length < quotes.length;
 
-  const loadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    if (nextPage * itemsPerPage >= quotes.length) {
-      localStorage.setItem(QUOTE_LIST_LOADED_KEY, "true");
-    }
-  };
+  useEffect(() => {
+    if (!hasMoreQuotes) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 1 }
+    );
+    if (loaderRef.current) observer.observe(loaderRef.current);
+    return () => {
+      if (loaderRef.current) observer.unobserve(loaderRef.current);
+    };
+  }, [hasMoreQuotes]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [quotes.length]);
 
   return (
     <div className="space-y-4">
@@ -59,13 +62,8 @@ const QuoteList = ({ quotes, onVote, userVoteType, onAddEdit, onDelete, isLogged
       )}
 
       {hasMoreQuotes && (
-        <div className="flex justify-center mt-6">
-          <button
-            onClick={loadMore}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            Load More Quotes
-          </button>
+        <div ref={loaderRef} className="flex justify-center mt-6">
+          <span className="px-4 py-2 text-gray-400">Loading more...</span>
         </div>
       )}
     </div>
